@@ -1,14 +1,11 @@
-import Notiflix from 'notiflix';
-import SlimSelect from 'slim-select';
-
-// Делаем запрос
-
-const url = `https://api.thecatapi.com/v1/breeds`;
-const imageUrl = `https://api.thecatapi.com/v1/images/search`;
-const api_key =
-  'live_wiC60OFEUqzeRcuy1bwn3yYBHRpNqzjqT8Cy8cqXt9BgcRKHkumJM3XaVpUczFvL';
+// import Notiflix from 'notiflix';
+// import SlimSelect from 'slim-select';
+import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
+import './css/styles.css';
 const breedSelect = document.querySelector('.breed-select');
 const catInfo = document.querySelector('.cat-info');
+const error = document.querySelector('.error');
+const loader = document.querySelector('.loader');
 
 fetchBreeds()
   .then(breeds => {
@@ -24,19 +21,19 @@ fetchBreeds()
     console.log('Произошла ошибка:', error);
   });
 
-function fetchBreeds() {
-  return fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Произошла ошибка при выполнении запроса');
-      }
-      return response.json();
-    })
-    .then(data => {
-      return data.map(({ id, name }) => ({ id, name }));
+breedSelect.addEventListener('change', () => {
+  const selectedBreedId = breedSelect.value;
+
+  fetchCatByBreed(selectedBreedId)
+    .then(catData => {
+      catInfo.innerHTML = `
+        <img src="${catData.url}" alt="Cat Image" width = "700" heigh="500">
+        <h3>${catData.breeds[0].name}</h3>
+        <p><strong>Description:</strong> ${catData.breeds[0].description}</p>
+        <p><strong>Temperament:</strong> ${catData.breeds[0].temperament}</p>
+      `;
     })
     .catch(error => {
-      console.log('Ошибка:', error.message);
-      throw error;
+      console.log('Произошла ошибка:', error);
     });
-}
+});
