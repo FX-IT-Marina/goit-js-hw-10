@@ -1,11 +1,27 @@
-// import Notiflix from 'notiflix';
-// import SlimSelect from 'slim-select';
 import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
 import './css/styles.css';
+import Notiflix from 'notiflix';
+
 const breedSelect = document.querySelector('.breed-select');
 const catInfo = document.querySelector('.cat-info');
 const error = document.querySelector('.error');
 const loader = document.querySelector('.loader');
+
+function showLoader() {
+  loader.style.display = 'block';
+  breedSelect.style.display = 'none';
+}
+
+function hideLoader() {
+  loader.style.display = 'none';
+  breedSelect.style.display = 'block';
+}
+
+function showError(message) {
+  Notiflix.Notify.Failure(message);
+}
+
+showLoader();
 
 fetchBreeds()
   .then(breeds => {
@@ -16,18 +32,23 @@ fetchBreeds()
       return option;
     });
     breedSelect.append(...breedOptions);
+    hideLoader();
   })
   .catch(error => {
     console.log('Произошла ошибка:', error);
+    hideLoader();
+    showError('Oops! Something went wrong! Try reloading the page!');
   });
 
 breedSelect.addEventListener('change', () => {
   const selectedBreedId = breedSelect.value;
 
+  showLoader();
+
   fetchCatByBreed(selectedBreedId)
     .then(catData => {
       catInfo.innerHTML = `
-        <img src="${catData.url}" alt="Cat Image" width = "700" heigh="500">
+        <img src="${catData.url}" alt="Cat Image" width="700" height="500">
         <h3>${catData.breeds[0].name}</h3>
         <p><strong>Description:</strong> ${catData.breeds[0].description}</p>
         <p><strong>Temperament:</strong> ${catData.breeds[0].temperament}</p>
@@ -35,5 +56,9 @@ breedSelect.addEventListener('change', () => {
     })
     .catch(error => {
       console.log('Произошла ошибка:', error);
+      showError('Oops! Something went wrong!');
+    })
+    .finally(() => {
+      hideLoader();
     });
 });
