@@ -39,7 +39,7 @@ function fetchCatByBreed(breedId) {
       return response.json();
     })
     .then(data => {
-      return data[0]; // Возвращаем первый объект из массива
+      return data[0];
     })
     .catch(error => {
       console.log('Ошибка:', error.message);
