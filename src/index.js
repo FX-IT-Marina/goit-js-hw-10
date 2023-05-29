@@ -48,7 +48,8 @@ breedSelect.addEventListener('change', () => {
   const selectedBreedId = breedSelect.value;
 
   if (selectedBreedId !== selectedCatId) {
-    showLoader();
+    loader.style.display = 'block';
+    breedSelect.style.display = 'block';
     catInfo.innerHTML = '';
   }
 
